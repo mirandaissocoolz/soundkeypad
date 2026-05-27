@@ -264,6 +264,13 @@
     .keycap:hover .key-emoji {
       transform: scale(0.82);
     }
+    /* After a press-to-pause, suppress the hover-shrink until the
+       cursor leaves the key — JS adds .suppress-hover then removes
+       it on mouseleave so the next hover behaves normally. */
+    .keycap.suppress-hover:hover .key-base,
+    .keycap.suppress-hover:hover .key-emoji {
+      transform: none;
+    }
 
     /* Active: texture presses down */
     .keycap:active .key-texture {
@@ -679,8 +686,11 @@
         }
       }
 
-      async function play(id) {
+      async function play(id, key) {
         ensureCtx();
+        // Re-clicking after a pause should resume normal hover —
+        // clear the flag before doing anything else.
+        if (key) key.classList.remove('suppress-hover');
 
         // After the first user gesture warms the context, fetch every
         // remaining sound in the background so later taps are instant.
@@ -691,7 +701,18 @@
 
         const isSame = currentSoundId === id;
         stopCurrent();
-        if (isSame) return;  // toggle off
+        if (isSame) {
+          // Press-to-pause: take this key out of its hover-shrink
+          // state so it returns to original size even though the
+          // cursor is still over it.
+          if (key) {
+            key.classList.add('suppress-hover');
+            key.addEventListener('mouseleave', () => {
+              key.classList.remove('suppress-hover');
+            }, { once: true });
+          }
+          return;
+        }
 
         const mySeq = ++playSeq;
         let buffer;
@@ -718,7 +739,7 @@
       }
 
       document.querySelectorAll('.keycap').forEach(key => {
-        key.addEventListener('click', () => play(key.dataset.sound));
+        key.addEventListener('click', () => play(key.dataset.sound, key));
       });
     })();
   </script>
