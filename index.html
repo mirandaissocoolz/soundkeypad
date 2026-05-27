@@ -579,19 +579,6 @@
     </div><!-- /device-scale -->
   </div><!-- /scene -->
 
-  <audio id="s1"  src="sounds/(1) boom.mp3"                preload="auto"></audio>
-  <audio id="s2"  src="sounds/(2) crickets.mp3"            preload="auto"></audio>
-  <audio id="s3"  src="sounds/(3) clapping.mp3"            preload="auto"></audio>
-  <audio id="s4"  src="sounds/(4) suspense.MP3"            preload="auto"></audio>
-  <audio id="s5"  src="sounds/(5) happy.MP3"               preload="auto"></audio>
-  <audio id="s6"  src="sounds/(6) bruh.mp3"                preload="auto"></audio>
-  <audio id="s7"  src="sounds/(7) inspirational.mp3"       preload="auto"></audio>
-  <audio id="s8"  src="sounds/(8) math.mp3"                preload="auto"></audio>
-  <audio id="s9"  src="sounds/(9) woah.mp3"                preload="auto"></audio>
-  <audio id="s10" src="sounds/(10) sad violin.mp3"         preload="auto"></audio>
-  <audio id="s11" src="sounds/(11) explosion.mp3"          preload="auto"></audio>
-  <audio id="s12" src="sounds/(12) bombastic side eye.mp3" preload="auto"></audio>
-
   <script>
     /* ── Responsive fit ──
        Sizes the keypad so its larger dimension is at most 80% of the
@@ -621,35 +608,119 @@
       fit();
     })();
 
-    let currentAudio = null;
+    /* ── Audio playback (Web Audio API) ──
+       <audio> elements with preload="auto" × 12 blew iOS Safari's
+       memory budget, turning the tab grey on first tap. Web Audio
+       lets us:
+         • share a single AudioContext (with webkit prefix fallback)
+         • resume it inside the click handler — required by Safari
+           before any sound can be produced
+         • lazy-load + cache decoded buffers instead of holding 12
+           media elements in memory. */
+    (function() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
 
-    function stopCurrent() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
+      let ctx = null;
+      const buffers = {};       // id → decoded AudioBuffer (cache)
+      let currentSource = null; // active BufferSource (for toggle/stop)
+      let currentSoundId = null;
+      let preloadStarted = false;
+      let playSeq = 0;          // monotonic — aborts stale async plays
+
+      const sounds = {
+        '1':  'sounds/(1) boom.mp3',
+        '2':  'sounds/(2) crickets.mp3',
+        '3':  'sounds/(3) clapping.mp3',
+        '4':  'sounds/(4) suspense.MP3',
+        '5':  'sounds/(5) happy.MP3',
+        '6':  'sounds/(6) bruh.mp3',
+        '7':  'sounds/(7) inspirational.mp3',
+        '8':  'sounds/(8) math.mp3',
+        '9':  'sounds/(9) woah.mp3',
+        '10': 'sounds/(10) sad violin.mp3',
+        '11': 'sounds/(11) explosion.mp3',
+        '12': 'sounds/(12) bombastic side eye.mp3'
+      };
+
+      function ensureCtx() {
+        if (!ctx) ctx = new AudioCtx();
+        // iOS Safari starts the context in 'suspended' state. resume()
+        // only succeeds when called from inside a user-gesture handler,
+        // which is exactly where this runs.
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
       }
-    }
 
-    document.querySelectorAll('.keycap').forEach(key => {
-      key.addEventListener('click', () => {
-        const audio = document.getElementById('s' + key.dataset.sound);
-        if (!audio) return;
+      function decode(arrayBuffer) {
+        // Safari <14.1 only supports the callback form of
+        // decodeAudioData. Handle both shapes.
+        return new Promise((resolve, reject) => {
+          const maybePromise = ctx.decodeAudioData(arrayBuffer, resolve, reject);
+          if (maybePromise && typeof maybePromise.then === 'function') {
+            maybePromise.then(resolve, reject);
+          }
+        });
+      }
 
-        // If any audio is currently playing, stop it.
-        if (currentAudio) {
-          const wasSame = currentAudio === audio;
-          stopCurrent();
-          if (wasSame) return; // toggle off — don't restart the same key
+      async function loadSound(id) {
+        if (buffers[id]) return buffers[id];
+        const res = await fetch(encodeURI(sounds[id]));
+        const arrBuf = await res.arrayBuffer();
+        buffers[id] = await decode(arrBuf);
+        return buffers[id];
+      }
+
+      function stopCurrent() {
+        if (currentSource) {
+          try { currentSource.stop(); } catch (e) {}
+          currentSource = null;
+          currentSoundId = null;
+        }
+      }
+
+      async function play(id) {
+        ensureCtx();
+
+        // After the first user gesture warms the context, fetch every
+        // remaining sound in the background so later taps are instant.
+        if (!preloadStarted) {
+          preloadStarted = true;
+          Object.keys(sounds).forEach(sid => loadSound(sid).catch(() => {}));
         }
 
-        currentAudio = audio;
-        audio.play().catch(() => {});
-        audio.addEventListener('ended', () => {
-          if (currentAudio === audio) currentAudio = null;
-        }, { once: true });
+        const isSame = currentSoundId === id;
+        stopCurrent();
+        if (isSame) return;  // toggle off
+
+        const mySeq = ++playSeq;
+        let buffer;
+        try {
+          buffer = await loadSound(id);
+        } catch (e) {
+          return;
+        }
+        // Another tap superseded us during the await — bail.
+        if (mySeq !== playSeq) return;
+
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        src.connect(ctx.destination);
+        src.onended = () => {
+          if (currentSource === src) {
+            currentSource = null;
+            currentSoundId = null;
+          }
+        };
+        src.start(0);
+        currentSource = src;
+        currentSoundId = id;
+      }
+
+      document.querySelectorAll('.keycap').forEach(key => {
+        key.addEventListener('click', () => play(key.dataset.sound));
       });
-    });
+    })();
   </script>
 </body>
 </html>
