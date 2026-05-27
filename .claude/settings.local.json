@@ -29,7 +29,9 @@
       "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__get_screenshot",
       "Bash(curl -s -o /tmp/dial_ref.png \"https://www.figma.com/api/mcp/asset/b1345b99-2ea0-42e6-adcd-3d65a978a472\")",
       "Read(//tmp/**)",
-      "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__get_design_context"
+      "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__get_design_context",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
