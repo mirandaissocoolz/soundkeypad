@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx --version)",
+      "Bash(which ruby *)",
+      "Bash(ruby -run -e httpd /Users/home/Desktop/keypad -p 3300)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3300/react.html)",
+      "Bash(kill %1)",
+      "Bash(xargs kill -9)",
+      "WebFetch(domain:www.figma.com)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(cp /Users/home/Desktop/keypad/css/style.css /tmp/keypad/css/style.css && echo \"synced\")",
+      "Bash(ls \"/Users/home/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/8df807c9-0f2a-441c-b913-fb86ea169157/4abdb41e-5ba8-4cee-97dc-0f4028f973ea/skills/setup-cowork/\" 2>/dev/null)",
+      "Bash(cp -r /Users/home/Desktop/keypad/assets/sounds /tmp/keypad/assets/sounds)",
+      "Bash(cp /Users/home/Desktop/keypad/react.html /tmp/keypad/react.html)",
+      "mcp__plugin_figma_figma__whoami",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(mkdir -p \"/Users/home/Desktop/keypad/sounds\" && cp \"/Users/home/Desktop/sf pad/\"*.mp3 \"/Users/home/Desktop/sf pad/\"*.MP3 \"/Users/home/Desktop/keypad/sounds/\" 2>/dev/null; ls \"/Users/home/Desktop/keypad/sounds/\")",
+      "Bash(which -a python3 python 2>/dev/null; ls /usr/local/bin/python* /opt/homebrew/bin/python* 2>/dev/null; echo \"---\"; node --version 2>/dev/null; npx --version 2>/dev/null)",
+      "Bash(ls /opt/homebrew/bin/ 2>/dev/null | head -20; ls /usr/local/bin/ 2>/dev/null | head -20)",
+      "Bash(/usr/bin/python3 -c \"open\\('/Users/home/Desktop/keypad/index.html'\\)\")",
+      "Bash(rm -rf /tmp/keypad)",
+      "Bash(mkdir -p /tmp/keypad/sounds)",
+      "Bash(cp /Users/home/Desktop/keypad/index.html /tmp/keypad/)",
+      "Bash(cp /Users/home/Desktop/keypad/sounds/* /tmp/keypad/sounds/)",
+      "Bash(chmod +x /Users/home/Desktop/keypad/start-server.sh)",
+      "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__use_figma",
+      "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__get_screenshot",
+      "Bash(curl -s -o /tmp/dial_ref.png \"https://www.figma.com/api/mcp/asset/b1345b99-2ea0-42e6-adcd-3d65a978a472\")",
+      "Read(//tmp/**)",
+      "mcp__ed5bb65c-1e58-4731-a400-43be66f2539c__get_design_context"
+    ]
+  }
+}
