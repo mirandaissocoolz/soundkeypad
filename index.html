@@ -615,26 +615,19 @@
       fit();
     })();
 
-    /* ── Audio playback (Web Audio API) ──
-       <audio> elements with preload="auto" × 12 blew iOS Safari's
-       memory budget, turning the tab grey on first tap. Web Audio
-       lets us:
-         • share a single AudioContext (with webkit prefix fallback)
-         • resume it inside the click handler — required by Safari
-           before any sound can be produced
-         • lazy-load + cache decoded buffers instead of holding 12
-           media elements in memory. */
+    /* ── Audio playback ──
+       Uses lazy-created HTMLAudioElement instances (one per sound)
+       rather than Web Audio API. Reasons:
+         • Web Audio respects iPhone's silent-mode switch in a way
+           that effectively muted ALL output for some users — even
+           with a clean AudioContext.resume() inside the click handler.
+           HTMLAudioElement is the more permissive path on iOS.
+         • The original grey-tab Safari bug was caused by 12 inline
+           <audio preload="auto"> tags pre-buffering megabytes of MP3
+           on page load. Lazy creation + preload="none" sidesteps
+           that completely — elements are created on demand and don't
+           fetch their MP3 until play() is called from a user gesture. */
     (function() {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-
-      let ctx = null;
-      const buffers = {};       // id → decoded AudioBuffer (cache)
-      let currentSource = null; // active BufferSource (for toggle/stop)
-      let currentSoundId = null;
-      let preloadStarted = false;
-      let playSeq = 0;          // monotonic — aborts stale async plays
-
       const sounds = {
         '1':  'sounds/(1) boom.mp3',
         '2':  'sounds/(2) crickets.mp3',
@@ -650,61 +643,40 @@
         '12': 'sounds/(12) bombastic side eye.mp3'
       };
 
-      function ensureCtx() {
-        if (!ctx) ctx = new AudioCtx();
-        // iOS Safari starts the context in 'suspended' state. resume()
-        // only succeeds when called from inside a user-gesture handler,
-        // which is exactly where this runs.
-        if (ctx.state === 'suspended') ctx.resume();
-        return ctx;
-      }
+      const audioCache = {};
+      let currentAudio = null;
+      let currentId = null;
 
-      function decode(arrayBuffer) {
-        // Safari <14.1 only supports the callback form of
-        // decodeAudioData. Handle both shapes.
-        return new Promise((resolve, reject) => {
-          const maybePromise = ctx.decodeAudioData(arrayBuffer, resolve, reject);
-          if (maybePromise && typeof maybePromise.then === 'function') {
-            maybePromise.then(resolve, reject);
-          }
-        });
-      }
-
-      async function loadSound(id) {
-        if (buffers[id]) return buffers[id];
-        const res = await fetch(encodeURI(sounds[id]));
-        const arrBuf = await res.arrayBuffer();
-        buffers[id] = await decode(arrBuf);
-        return buffers[id];
+      function getAudio(id) {
+        if (!audioCache[id]) {
+          const a = new Audio();
+          a.preload = 'none';     // don't fetch until play() — keeps memory low
+          a.playsInline = true;   // iOS: keep audio inline, don't go fullscreen
+          a.src = encodeURI(sounds[id]);
+          audioCache[id] = a;
+        }
+        return audioCache[id];
       }
 
       function stopCurrent() {
-        if (currentSource) {
-          try { currentSource.stop(); } catch (e) {}
-          currentSource = null;
-          currentSoundId = null;
+        if (currentAudio) {
+          currentAudio.pause();
+          try { currentAudio.currentTime = 0; } catch (e) {}
+          currentAudio = null;
+          currentId = null;
         }
       }
 
-      async function play(id, key) {
-        ensureCtx();
-        // Re-clicking after a pause should resume normal hover —
-        // clear the flag before doing anything else.
+      function play(id, key) {
+        // Re-clicking after a pause should restore normal hover.
         if (key) key.classList.remove('suppress-hover');
 
-        // After the first user gesture warms the context, fetch every
-        // remaining sound in the background so later taps are instant.
-        if (!preloadStarted) {
-          preloadStarted = true;
-          Object.keys(sounds).forEach(sid => loadSound(sid).catch(() => {}));
-        }
-
-        const isSame = currentSoundId === id;
+        const isSame = currentId === id;
         stopCurrent();
         if (isSame) {
           // Press-to-pause: take this key out of its hover-shrink
-          // state so it returns to original size even though the
-          // cursor is still over it.
+          // state so it returns to original size while the cursor
+          // is still over it.
           if (key) {
             key.classList.add('suppress-hover');
             key.addEventListener('mouseleave', () => {
@@ -714,28 +686,28 @@
           return;
         }
 
-        const mySeq = ++playSeq;
-        let buffer;
-        try {
-          buffer = await loadSound(id);
-        } catch (e) {
-          return;
+        const audio = getAudio(id);
+        try { audio.currentTime = 0; } catch (e) {}
+        // play() is invoked synchronously inside the click handler so
+        // iOS Safari treats it as user-initiated and allows playback.
+        const p = audio.play();
+        if (p && typeof p.then === 'function') {
+          p.catch(() => {
+            if (currentId === id) {
+              currentAudio = null;
+              currentId = null;
+            }
+          });
         }
-        // Another tap superseded us during the await — bail.
-        if (mySeq !== playSeq) return;
+        currentAudio = audio;
+        currentId = id;
 
-        const src = ctx.createBufferSource();
-        src.buffer = buffer;
-        src.connect(ctx.destination);
-        src.onended = () => {
-          if (currentSource === src) {
-            currentSource = null;
-            currentSoundId = null;
+        audio.addEventListener('ended', () => {
+          if (currentId === id) {
+            currentAudio = null;
+            currentId = null;
           }
-        };
-        src.start(0);
-        currentSource = src;
-        currentSoundId = id;
+        }, { once: true });
       }
 
       document.querySelectorAll('.keycap').forEach(key => {
