@@ -427,6 +427,47 @@
       border-radius: 4.635px;
       transform: rotate(45deg);
     }
+
+    /* ── MOBILE: drop the effects that crash iOS Safari ──
+       The device is laid out at 3931×4023px and scaled down via CSS
+       transform. iOS Safari rasterizes backdrop-filter and the big
+       inset shadows at the *pre-scale* size, which blows the per-tab
+       memory cap and triggers the "A problem repeatedly occurred"
+       reload loop. At phone scale the heavy effects are barely visible
+       anyway — strip them. */
+    @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+      .shell,
+      .cutout {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .shell {
+        box-shadow:
+          inset 0px -80px 60px 0px rgba(255,255,255,0.55),
+          inset 0px -110px 20px 0px rgba(0,0,0,0.7),
+          inset 0px 40px 80px 0px rgba(24,24,24,0.45);
+      }
+      .cutout {
+        box-shadow:
+          inset 0px -60px 60px 0px rgba(255,255,255,0.5),
+          inset 0px -22px 20px 0px rgba(0,0,0,0.55),
+          inset 0px 40px 80px 0px rgba(24,24,24,0.4);
+      }
+      .usb-connector {
+        box-shadow:
+          inset 0px -110px 20px 0px rgba(0,0,0,0.83),
+          inset 0px 40px 80px 0px rgba(24,24,24,0.45);
+      }
+      /* The plate texture is a multi-megabyte image pulled from a remote
+         host and composited with mix-blend-mode — two big mobile costs
+         for an effect that's invisible at phone scale. The updated
+         Figma design removes it entirely. */
+      .plate-texture { display: none; }
+      /* Keycap blends (mix-blend-overlay on .key-base, mix-blend-luminosity
+         on .key-emoji) and the .key-base blur stay enabled on mobile —
+         they're cheap on small elements and the design relies on them
+         for correct color. */
+    }
   </style>
 </head>
 <body>
