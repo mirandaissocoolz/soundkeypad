@@ -15,8 +15,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 5vmin;
+      min-height: 100vh;       /* fallback */
+      min-height: 100dvh;      /* dynamic viewport — correct on mobile */
       overflow: hidden;
     }
 
@@ -594,25 +594,22 @@
 
   <script>
     /* ── Responsive fit ──
-       Keeps the keypad centered with equal padding on any viewport.
-       Picks the largest scale that still fits inside the available area
-       (viewport minus body padding), capped at 0.14 so it doesn't get
-       bigger than the desktop target size. */
+       Sizes the keypad so its larger dimension is at most 80% of the
+       viewport's shorter side. That guarantees visible padding on all
+       four sides of the keypad on every screen — including tall mobile
+       portrait — while flexbox keeps it perfectly centered. Capped at
+       0.14× so it doesn't grow past the desktop target size. */
     (function() {
       const DEVICE_W = 3931;
       const DEVICE_H = 4023.12;
       const MAX_SCALE = 0.14;
+      const FIT_RATIO = 0.80;   /* % of vmin the keypad's long side fills */
       const scene = document.querySelector('.scene');
       const deviceScale = document.querySelector('.device-scale');
 
       function fit() {
-        // Body has padding: 5vmin → 10vmin total on each axis.
         const vmin = Math.min(window.innerWidth, window.innerHeight);
-        const pad = vmin * 0.10;
-        const availW = window.innerWidth - pad;
-        const availH = window.innerHeight - pad;
-        const fitScale = Math.min(availW / DEVICE_W, availH / DEVICE_H);
-        const scale = Math.min(MAX_SCALE, fitScale);
+        const scale = Math.min(MAX_SCALE, (vmin * FIT_RATIO) / DEVICE_H);
 
         scene.style.width  = (DEVICE_W * scale) + 'px';
         scene.style.height = (DEVICE_H * scale) + 'px';
