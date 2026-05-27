@@ -20,18 +20,19 @@
       overflow: hidden;
     }
 
-    /* Scene: visible container at 0.14× the native Figma dimensions */
+    /* Scene: holds the scaled device. Its width/height + the
+       device-scale transform are set dynamically in JS so the device
+       always fits the viewport (minus body padding) and stays centered. */
     .scene {
-      width: 550.34px;    /* 3931 × 0.14 */
-      height: 563.24px;   /* 4023.12 × 0.14 */
       position: relative;
       flex-shrink: 0;
-      max-width: 90vmin;
-      max-height: 90vmin;
+      /* Sensible defaults if JS hasn't run yet — JS will override. */
+      width: 550.34px;
+      height: 563.24px;
     }
 
     .device-scale {
-      transform: scale(0.14);
+      transform: scale(0.14);  /* overridden by JS */
       transform-origin: top left;
       position: absolute;
       top: 0;
@@ -592,6 +593,37 @@
   <audio id="s12" src="sounds/(12) bombastic side eye.mp3" preload="auto"></audio>
 
   <script>
+    /* ── Responsive fit ──
+       Keeps the keypad centered with equal padding on any viewport.
+       Picks the largest scale that still fits inside the available area
+       (viewport minus body padding), capped at 0.14 so it doesn't get
+       bigger than the desktop target size. */
+    (function() {
+      const DEVICE_W = 3931;
+      const DEVICE_H = 4023.12;
+      const MAX_SCALE = 0.14;
+      const scene = document.querySelector('.scene');
+      const deviceScale = document.querySelector('.device-scale');
+
+      function fit() {
+        // Body has padding: 5vmin → 10vmin total on each axis.
+        const vmin = Math.min(window.innerWidth, window.innerHeight);
+        const pad = vmin * 0.10;
+        const availW = window.innerWidth - pad;
+        const availH = window.innerHeight - pad;
+        const fitScale = Math.min(availW / DEVICE_W, availH / DEVICE_H);
+        const scale = Math.min(MAX_SCALE, fitScale);
+
+        scene.style.width  = (DEVICE_W * scale) + 'px';
+        scene.style.height = (DEVICE_H * scale) + 'px';
+        deviceScale.style.transform = 'scale(' + scale + ')';
+      }
+
+      window.addEventListener('resize', fit);
+      window.addEventListener('orientationchange', fit);
+      fit();
+    })();
+
     let currentAudio = null;
 
     function stopCurrent() {
