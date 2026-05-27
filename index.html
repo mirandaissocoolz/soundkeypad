@@ -597,7 +597,11 @@
       const DEVICE_W = 3931;
       const DEVICE_H = 4023.12;
       const MAX_SCALE = 0.14;
-      const FIT_RATIO = 0.80;   /* % of vmin the keypad's long side fills */
+      const FIT_RATIO = 0.89;   /* % of vmin the keypad's long side fills —
+                                   tuned so phones get ~6.5% padding/side
+                                   (40% less than the previous 0.80 value).
+                                   Tablets/desktops hit MAX_SCALE first so
+                                   they're unaffected. */
       const scene = document.querySelector('.scene');
       const deviceScale = document.querySelector('.device-scale');
 
