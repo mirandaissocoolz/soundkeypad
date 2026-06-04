@@ -147,25 +147,24 @@
       width: 157.34%;   /* 100 + 28.67 + 28.67 */
       height: 157.18%;  /* 100 + 14.05 + 43.13 */
     }
-    /* Polygon 3 (hexagon, pointCount=6) — 67×67 centered in screw,
-       color rgb(27,27,27) with Figma's two inner shadows:
-       - dark rgba(0,0,0,0.53) at y=+11.79, blur 3.57
-       - white rgba(255,255,255,0.47) at y=-2.36, blur 1.79 */
+    /* Polygon 3 — the screw-slot.svg from Figma. Natural viewBox is
+       58.18 × 66.14 (taller than wide), then rotated 90° per the
+       Figma design so the visible hex sits point-left/point-right. */
     .screw-poly {
+      display: block;
       position: absolute;
-      width: 59.4%;   /* 67.18 / 113.03 */
-      height: 59.1%;  /* 66.98 / 113.36 */
+      width: 51.4%;
+      height: 58.5%;
       left: 50%;
       top: 50%;
-      transform: translate(-50%, -50%);
-      background: #1b1b1b;
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      box-shadow:
-        inset 0 11.79px 3.57px rgba(0, 0, 0, 0.53),
-        inset 0 -2.36px 1.79px rgba(255, 255, 255, 0.47);
+      transform: translate(-50%, -50%) rotate(90deg);
     }
-    .screw-tl { top: 0; left: 0; transform: rotate(180deg); transform-origin: center; }
-    .screw-bl { bottom: 0; left: 0; transform: rotate(180deg); transform-origin: center; }
+    /* Per Figma: left screws are unrotated; right screws are rotated
+       90° clockwise (which is also why the right-side asset uses the
+       darker #0B0B0B fill of screw-alt.svg vs the #262626 of the
+       left-side screw.svg). */
+    .screw-tl { top: 0; left: 0; }
+    .screw-bl { bottom: 0; left: 0; }
     .screw-tr { top: 0; right: 0; transform: rotate(90deg); transform-origin: center; }
     .screw-br { bottom: 0; right: 0; transform: rotate(90deg); transform-origin: center; }
 
@@ -283,14 +282,17 @@
 
     /* ── DIAL ──
        Centered at boy X (2908.758) and cricket Y (1067.997) in LARGE RECT.
-       Native dial size from Figma: 601.766 × 603.515. */
+       Native dial size from Figma: 601.766 × 603.515.
+       Scaled down ~8% and nudged right per design adjustment. */
     .dial-container {
       position: absolute;
-      left: 2607.875px;   /* 2908.758 − 601.766/2 */
+      left: 2657.875px;   /* original 2607.875, +50 right */
       top:  766.240px;    /* 1067.997 − 603.515/2 */
       width: 601.766px;
       height: 603.515px;
       filter: drop-shadow(0px 23.132px 14.11px rgba(0,0,0,0.25));
+      transform: scale(0.92);
+      transform-origin: center;
     }
     .dial-knob {
       width: 601.766px;
@@ -340,11 +342,13 @@
       );
     }
 
-    /* ── ROTARY ENCODER ── */
+    /* ── ROTARY ENCODER ──
+       y-center aligned with the row-1 boom (💣) key center
+       (boom-row Y center = 1067.997 in the 3931×4023 design space). */
     .rotary-encoder {
       position: absolute;
       left: 727.17px;
-      top: 786.76px;
+      top: 839.768px;   /* 1067.997 − 456.457/2 */
       width: 484.147px;
       height: 456.457px;
     }
@@ -392,6 +396,12 @@
       color: #1c1c1c;
       white-space: nowrap;
       font-weight: 400;
+      /* Isolate on its own compositor layer so neighboring keycap
+         hover transitions don't trigger repaints/subpixel shifts on
+         the rotated text. */
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
     }
     .text-soundkeypad {
       left: 3332.39px; top: 2232.98px;
@@ -483,19 +493,19 @@
         <div class="screws">
           <div class="screw screw-tl">
             <img class="screw-bg" src="assets/screw.svg" alt="">
-            <div class="screw-poly"></div>
+            <img class="screw-poly" src="assets/screw-slot.svg" alt="">
           </div>
           <div class="screw screw-bl">
             <img class="screw-bg" src="assets/screw.svg" alt="">
-            <div class="screw-poly"></div>
+            <img class="screw-poly" src="assets/screw-slot.svg" alt="">
           </div>
           <div class="screw screw-tr">
             <img class="screw-bg" src="assets/screw-alt.svg" alt="">
-            <div class="screw-poly"></div>
+            <img class="screw-poly" src="assets/screw-slot.svg" alt="">
           </div>
           <div class="screw screw-br">
             <img class="screw-bg" src="assets/screw-alt.svg" alt="">
-            <div class="screw-poly"></div>
+            <img class="screw-poly" src="assets/screw-slot.svg" alt="">
           </div>
         </div>
       </div>

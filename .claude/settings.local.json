@@ -46,7 +46,21 @@
       "Bash(git ls-remote *)",
       "Bash(git fetch *)",
       "Bash(git merge *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(git mv *)",
+      "Bash(python3 -m http.server 3302)",
+      "Bash(curl -sI http://localhost:3302/soundpad/assets/rotary-encoder.svg)",
+      "Bash(curl -sI http://localhost:3302/soundpad/assets/logo.svg)",
+      "Bash(curl -sI http://localhost:3302/soundpad/assets/smiley-face.svg)",
+      "Bash(lsof -ti:3302)",
+      "Bash(xargs -r kill)",
+      "Bash(lsof -ti:3300)",
+      "Bash(nohup python3 -m http.server 3300 --directory /Users/home/Desktop/CODE/keypad)",
+      "Bash(curl -sI http://localhost:3300/soundpad/)",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "Bash(curl -so /tmp/figma-node.png \"https://www.figma.com/api/mcp/asset/0b9b951a-dc41-4e0c-9339-f05afaf001bd\")",
+      "mcp__plugin_figma_figma__get_metadata",
+      "Bash(curl -sI http://localhost:3300/soundpad/assets/screw-slot.svg)"
     ]
   }
 }
