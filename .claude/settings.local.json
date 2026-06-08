@@ -60,7 +60,12 @@
       "mcp__plugin_figma_figma__get_screenshot",
       "Bash(curl -so /tmp/figma-node.png \"https://www.figma.com/api/mcp/asset/0b9b951a-dc41-4e0c-9339-f05afaf001bd\")",
       "mcp__plugin_figma_figma__get_metadata",
-      "Bash(curl -sI http://localhost:3300/soundpad/assets/screw-slot.svg)"
+      "Bash(curl -sI http://localhost:3300/soundpad/assets/screw-slot.svg)",
+      "Bash(cp -R /Users/home/Desktop/CODE/keypad /tmp/keypad)",
+      "Bash(curl -sI https://mirandaissoocool.com/soundpad/)",
+      "Bash(curl -sI https://mirandaissoocool.com)",
+      "Bash(curl -sL https://mirandaissoocool.com/soundpad/)",
+      "Bash(curl -sL -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" https://mirandaissoocool.com/soundpad/assets/logo.svg https://mirandaissoocool.com/soundpad/assets/rotary-encoder.svg https://mirandaissoocool.com/soundpad/assets/smiley-face.svg https://mirandaissoocool.com/soundpad/sounds/\\\\\\(1\\\\\\)%20boom.mp3)"
     ]
   }
 }
