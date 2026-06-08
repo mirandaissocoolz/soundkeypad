@@ -85,7 +85,11 @@
       "Bash(curl -sI \"https://www.mirandaissoocool.com/soundpad/\")",
       "Bash(curl -sIL \"https://www.mirandaissoocool.com/assets/logo.svg\" -o /dev/null -w \"%{http_code}\\\\n\")",
       "Bash(curl -sIL \"https://www.mirandaissoocool.com/assets/rotary-encoder.svg\" -o /dev/null -w \"%{http_code}\\\\n\")",
-      "Bash(curl -sIL \"https://www.mirandaissoocool.com/sounds/%281%29%20boom.mp3\" -o /dev/null -w \"%{http_code}\\\\n\")"
+      "Bash(curl -sIL \"https://www.mirandaissoocool.com/sounds/%281%29%20boom.mp3\" -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(git rm *)",
+      "Bash(python3 -m http.server 3300)",
+      "Bash(curl -sI http://localhost:3300/)",
+      "Bash(kill 35590)"
     ]
   }
 }
