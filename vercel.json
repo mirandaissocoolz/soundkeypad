@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/soundpad", "destination": "/soundpad/", "permanent": true }
+  ]
+}

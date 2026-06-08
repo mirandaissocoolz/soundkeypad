@@ -65,7 +65,27 @@
       "Bash(curl -sI https://mirandaissoocool.com/soundpad/)",
       "Bash(curl -sI https://mirandaissoocool.com)",
       "Bash(curl -sL https://mirandaissoocool.com/soundpad/)",
-      "Bash(curl -sL -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" https://mirandaissoocool.com/soundpad/assets/logo.svg https://mirandaissoocool.com/soundpad/assets/rotary-encoder.svg https://mirandaissoocool.com/soundpad/assets/smiley-face.svg https://mirandaissoocool.com/soundpad/sounds/\\\\\\(1\\\\\\)%20boom.mp3)"
+      "Bash(curl -sL -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\" https://mirandaissoocool.com/soundpad/assets/logo.svg https://mirandaissoocool.com/soundpad/assets/rotary-encoder.svg https://mirandaissoocool.com/soundpad/assets/smiley-face.svg https://mirandaissoocool.com/soundpad/sounds/\\\\\\(1\\\\\\)%20boom.mp3)",
+      "Bash(curl -sL https://www.mirandaissoocool.com/ -o /tmp/live-root.html)",
+      "Bash(curl -sI https://www.mirandaissoocool.com/soundpad/)",
+      "Bash(curl -sI https://www.mirandaissoocool.com/soundpad/assets/logo.svg)",
+      "Bash(curl -sI https://www.mirandaissoocool.com/)",
+      "Bash(curl -sL https://www.mirandaissoocool.com/soundpad/)",
+      "Bash(curl -sL https://www.mirandaissoocool.com/sw.js -o /dev/null -w \"sw.js: %{http_code}\\\\n\")",
+      "Bash(curl -sL https://www.mirandaissoocool.com/soundpad/sw.js -o /dev/null -w \"soundpad/sw.js: %{http_code}\\\\n\")",
+      "Bash(curl -sL -o /tmp/live-logo.svg \"https://www.mirandaissoocool.com/soundpad/assets/logo.svg\")",
+      "Bash(md5 -q /tmp/live-logo.svg)",
+      "Bash(md5 -q /Users/home/Desktop/CODE/keypad/soundpad/assets/logo.svg)",
+      "Bash(curl -sI \"https://lnkd.in/g8gaTEne\")",
+      "Bash(curl -sIL \"https://lnkd.in/g8gaTEne\")",
+      "Bash(curl -sL \"https://lnkd.in/g8gaTEne\")",
+      "Bash(curl -sIL \"https://mirandaissoocool.com/soundpad\" -o /dev/null -w \"%{http_code} %{url_effective}\\\\n\")",
+      "Bash(curl -sI \"https://mirandaissoocool.com/soundpad\")",
+      "Bash(curl -sI \"https://www.mirandaissoocool.com/soundpad\")",
+      "Bash(curl -sI \"https://www.mirandaissoocool.com/soundpad/\")",
+      "Bash(curl -sIL \"https://www.mirandaissoocool.com/assets/logo.svg\" -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -sIL \"https://www.mirandaissoocool.com/assets/rotary-encoder.svg\" -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -sIL \"https://www.mirandaissoocool.com/sounds/%281%29%20boom.mp3\" -o /dev/null -w \"%{http_code}\\\\n\")"
     ]
   }
 }
